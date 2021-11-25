@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +32,13 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int LOC_CODE = 99;
 
+    // Variables para el delay
+    Handler m_handler;
+    Runnable m_handlerTask;
+    final int delayInMin = 5; // Se cambia esta variable
+    final int delay = delayInMin * 60 * 1000;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         energy_switch = findViewById(R.id.energy_switch);
 
         // Declaramos las configuraciones del fusedLocation en locationRequest
-        int LONG_INTERVAL = 6;
+        int LONG_INTERVAL = 3;
         int SHORT_INTERVAL = 1;
         locationRequest = LocationRequest.create()
                 .setInterval(LONG_INTERVAL * 1000)
@@ -76,10 +84,18 @@ public class MainActivity extends AppCompatActivity {
         updates_switch.setOnClickListener(v -> {
             if (updates_switch.isChecked()) {
                 startLocationUpdates();
+                m_handler.postDelayed(m_handlerTask, 5000);
             } else {
                 stopLocationUpdates();
+                m_handler.removeCallbacks(m_handlerTask);
             }
         });
+
+        m_handler = new Handler();
+        m_handlerTask = () -> {
+            stopLocationUpdates();
+            updates_switch.setChecked(false);
+        };
 
         updateGps();
     }
@@ -128,6 +144,7 @@ public class MainActivity extends AppCompatActivity {
         else speed.setText("N/A");
     }
 
+    // Empezar localización continua
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
         updates.setText("Se esta realizando el seguimiento de la localización");
@@ -135,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         updateGps();
     }
 
+    // Terminar localización continua
     private void stopLocationUpdates() {
         updates.setText("No se esta realizando el seguimiento de la localización");
 
@@ -146,4 +164,5 @@ public class MainActivity extends AppCompatActivity {
 
         fusedLocation.removeLocationUpdates(locationCallback);
     }
+
 }
