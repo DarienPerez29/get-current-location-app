@@ -96,8 +96,6 @@ public class MainActivity extends AppCompatActivity {
             stopLocationUpdates();
             updates_switch.setChecked(false);
         };
-
-        updateGps();
     }
 
     @Override
@@ -125,9 +123,7 @@ public class MainActivity extends AppCompatActivity {
             fusedLocation.getLastLocation().addOnSuccessListener(this, this::updateValues);
         } else {
             // Si no hay permisos, se solicitan nuevamente
-            requestPermissions(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION}, LOC_CODE);
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, LOC_CODE);
         }
     }
 
@@ -147,9 +143,9 @@ public class MainActivity extends AppCompatActivity {
     // Empezar localización continua
     @SuppressLint("MissingPermission")
     private void startLocationUpdates() {
+        updateGps();
         updates.setText("Se esta realizando el seguimiento de la localización");
         fusedLocation.requestLocationUpdates(locationRequest, locationCallback, null);
-        updateGps();
     }
 
     // Terminar localización continua
